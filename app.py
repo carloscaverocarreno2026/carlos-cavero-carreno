@@ -1,56 +1,57 @@
 import streamlit as st
+import time
 
-st.set_page_config(page_title="Quiz de Tensión Eléctrica en Perú", layout="centered")
+st.set_page_config(page_title="Juego de Preguntas - Tensiones Eléctricas Perú", page_icon="⚡")
 
-st.title("⚡ Quiz: Niveles de Tensión Eléctrica en Perú")
+st.title("⚡ Juego de Preguntas: Niveles de Tensión Eléctrica en Perú ⚡")
+st.write("Responde las siguientes preguntas sobre los niveles de tensión eléctrica en el Perú. ¡Pon a prueba tus conocimientos!")
 
 # Preguntas y respuestas
-preguntas = [
-    {
-        "pregunta": "¿Cuál es el nivel de tensión considerado como 'alta tensión' en Perú?",
-        "opciones": ["> 30 kV", "> 60 kV", "> 220 kV"],
-        "respuesta_correcta": "> 60 kV"
+preguntas = {
+    "1. ¿Cuál es el nivel de tensión típico de distribución primaria en Perú?": {
+        "opciones": ["10 kV", "22.9 kV", "66 kV", "220 kV"],
+        "respuesta": "22.9 kV"
     },
-    {
-        "pregunta": "¿Qué nivel de tensión corresponde típicamente al transporte de energía a largas distancias en Perú?",
-        "opciones": ["Media tensión", "Alta tensión", "Baja tensión"],
-        "respuesta_correcta": "Alta tensión"
+    "2. ¿Qué nivel de tensión se considera transmisión en el Perú?": {
+        "opciones": ["6.6 kV", "22.9 kV", "60 kV y superiores", "380 V"],
+        "respuesta": "60 kV y superiores"
     },
-    {
-        "pregunta": "¿Cuál es un valor típico de media tensión en Perú?",
-        "opciones": ["220 V", "22.9 kV", "500 kV"],
-        "respuesta_correcta": "22.9 kV"
+    "3. ¿Cuál es el voltaje nominal de distribución secundaria en baja tensión residencial en Perú?": {
+        "opciones": ["110 V", "220 V", "440 V", "24 V"],
+        "respuesta": "220 V"
     },
-    {
-        "pregunta": "¿Qué nivel de tensión se usa normalmente en hogares peruanos?",
-        "opciones": ["220 V", "10 kV", "440 V"],
-        "respuesta_correcta": "220 V"
+    "4. ¿Cuál de los siguientes se considera nivel de subtransmisión en Perú?": {
+        "opciones": ["22.9 kV", "60 kV", "220 kV", "500 kV"],
+        "respuesta": "60 kV"
     },
-    {
-        "pregunta": "¿Qué organismo regula el sistema eléctrico en Perú?",
-        "opciones": ["COES", "SUNAT", "MINSA"],
-        "respuesta_correcta": "COES"
+    "5. ¿Cuál es el mayor nivel de tensión del sistema eléctrico peruano?": {
+        "opciones": ["220 kV", "400 kV", "500 kV", "750 kV"],
+        "respuesta": "500 kV"
     }
-]
+}
 
-respuestas_usuario = []
+# Guardar respuestas del usuario
+respuestas_usuario = {}
 
-with st.form("quiz_form"):
-    for i, q in enumerate(preguntas):
-        respuesta = st.radio(f"{i+1}. {q['pregunta']}", q["opciones"], key=f"q{i}")
-        respuestas_usuario.append(respuesta)
-    submitted = st.form_submit_button("Enviar respuestas")
+for i, (pregunta, data) in enumerate(preguntas.items()):
+    respuestas_usuario[pregunta] = st.radio(
+        f"{i+1}. {pregunta}",
+        data["opciones"],
+        key=f"pregunta_{i}"
+    )
 
-if submitted:
-    score = 0
-    for i, r in enumerate(respuestas_usuario):
-        if r == preguntas[i]["respuesta_correcta"]:
-            score += 1
-
-    st.write(f"Tu puntaje: **{score} / {len(preguntas)}**")
-
-    if score == len(preguntas):
-        st.success("¡Felicidades! Respondiste todo correctamente ⚡🌩️")
-        st.image("lightning.gif", caption="Rayos de celebración", use_column_width=True)
+# Botón para verificar
+if st.button("Verificar respuestas"):
+    correctas = 0
+    for pregunta, data in preguntas.items():
+        if respuestas_usuario[pregunta] == data["respuesta"]:
+            correctas += 1
+    
+    if correctas == len(preguntas):
+        st.success("🎉 ¡Felicitaciones! Todas tus respuestas son correctas. 🎉")
+        # Animación simple con confetti
+        for _ in range(3):
+            st.balloons()
+            time.sleep(1)
     else:
-        st.warning("No acertaste todas. ¡Inténtalo de nuevo!")
+        st.error(f"Obtuviste {correctas} de {len(preguntas)} correctas. ¡Sigue intentando!")
